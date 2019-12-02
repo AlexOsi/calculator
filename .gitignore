@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+/.vs
+v16
+/Calculator/Calculator.sln
+/Calculator/Calculator.vcxproj
+/Calculator/Calculator.vcxproj.filters
+/Calculator/Calculator.vcxproj.user
