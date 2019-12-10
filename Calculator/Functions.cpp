@@ -1,5 +1,70 @@
 #include "Headers.h"
-#include <stdlib.h>
+
+void Make(T_List*& top)
+{
+	top = nullptr;
+}
+
+void Add(T_List*& top, float data)
+{
+	T_List* p = new T_List;
+	p->data = data;
+	p->next = top;
+	top = p;
+}
+
+void Delete_Last(T_List*& top)
+{
+	T_List* p = top;
+	top = p->next;
+	delete p;
+}
+
+float Last(T_List*& top)
+{
+	float result = top->data;
+	return result;
+}
+
+int Priority(char operat)
+{
+	if (operat == '+' || operat == '-')
+		return 1;
+	else if (operat == '*' || operat == '/')
+		return 2;
+	return 0;
+}
+
+int Priority(float code)
+{
+	if (code == 0 || code == 1)
+		return 1;
+	if (code == 2 || code == 3)
+		return 2;
+	return 0;
+}
+
+bool Is_Empty(T_List* top)
+{
+	if (top == nullptr)
+		return true;
+	return false;
+}
+
+void Push_Calculation_Result(float& a, float& b, int& nums_amount, T_List*& Nums, T_List*& Opers)
+{
+	a = Last(Nums);
+	Delete_Last(Nums);
+	nums_amount -= 1;
+
+	b = Last(Nums);
+	Delete_Last(Nums);
+	nums_amount -= 1;
+
+	Add(Nums, Calculate(b, a, Last(Opers)));
+	nums_amount += 1;
+	Delete_Last(Opers);
+}
 
 bool Is_Correct_Brackets(const char* expr, const int len_expr)
 {
@@ -23,63 +88,22 @@ bool Is_Correct_Brackets(const char* expr, const int len_expr)
 	return false;
 }
 
-int Simple_Calculate(const char* expr, const int len_expr)
+float Calculate(float a, float b, int code_oper)
 {
-	/*
-	Do simple calculation with 2 numbers and return result
-	*/
-	char operations[4] = { '+', '-', '*', '/' };
-
-	char num_1[10] = {};
-	int len_num1;
-	char num_2[10] = {};
-	int len_num2;
-	int di = 0; // index of digit of number
-	char operat = 'N'; // default NONE 
-	bool is_num1 = true; // false -> num2
-	bool is_digit = false;
-	for (int i = 0; i < len_expr; i++)
+	switch (code_oper)
 	{
-		is_digit = false;
-		if (expr[i] >= 48 && expr[i] <= 57) // numbers in ascii between 48 and 57
-		{
-			is_digit = true;
-			if (is_num1)
-			{
-				num_1[di] = expr[i];
-				di += 1;
-			}
-			else // num2
-			{
-				num_2[di] = expr[i];
-				di += 1;
-			}
-		}
-		if (operat == 'N' && !(is_digit))
-			for (int j = 0; j < 4; j++)
-				if (expr[i] == operations[j])
-				{
-					operat = operations[j]; // operation saved
-					if (is_num1)
-					{
-						is_num1 = false; // now save num2
-						len_num1 = di;
-						di = 0;
-					}
-					break;
-				}
+	case 0:
+		return a + b;
+	case 1:
+		return a - b;
+	case 2:
+		return a * b;
+	case 3:
+		return a*1.0 / b;
 	}
-	len_num2 = di;
+}
 
-	int n1 = atoi(num_1);
-	int n2 = atoi(num_2);
-	if (operat == '+')
-		return n1 + n2;
-	if (operat == '-')
-		return n1 - n2;
-	if (operat == '*')
-		return n1 * n2;
-	if (operat == '/')
-		return n1 / n2;
-	return 0;
+bool Calc_Is_Available(T_List* Opers, const int nums_amount)
+{
+	return nums_amount >= 2 && !Is_Empty(Opers) && Last(Opers) != 4;
 }
